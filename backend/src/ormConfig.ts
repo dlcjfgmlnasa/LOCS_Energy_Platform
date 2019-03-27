@@ -11,7 +11,7 @@ const ConnectionOptions: ConnectionOptions = {
   port: Number(process.env.DB_PORT),
   synchronize: true,
   logging: true,
-  entities: ["entities/**/*.*"]
+  entities: ["entities/*.*"]
 }
 
 export default ConnectionOptions;
