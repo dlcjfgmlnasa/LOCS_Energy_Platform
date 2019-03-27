@@ -1,11 +1,15 @@
 import express from "express";
-const app = express();
+import dotenv from "dotenv";
+import connectionOptions from "./ormConfig";
+import { createConnection } from "typeorm";
+dotenv.config();
 
-app.get('/', (req: express.Request, res: express.Response) => {
-  res.send('Hello World');
-});
+const handleAppStart = () => console.log(`app listening on http://${process.env.HOST_DOMAIN}:${process.env.HOST_PORT}`);
 
-app.listen(3000, () => {
-  console.log('Example app listening on port 3000!');
-})
-
+createConnection(connectionOptions)
+  .then(() => {
+    // Create a new express application instance
+    const app = express();
+    app.listen(Number(process.env.HOST_PORT), String(process.env.HOST_DOMAIN), handleAppStart);
+  })
+  .catch(error => console.log(error));
