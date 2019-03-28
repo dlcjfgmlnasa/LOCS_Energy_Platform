@@ -7,11 +7,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from "typeorm"
-import building from "./Building";
+import { Building } from "./Building";
 
 
 @Entity()
-class Power extends BaseEntity{
+export class Power extends BaseEntity{
   /* primary Key */
   @PrimaryGeneratedColumn() id: number;
 
@@ -36,12 +36,9 @@ class Power extends BaseEntity{
   minute: number;
 
   /* Building Info (빌딩 데이터 정보) */
-  @ManyToOne(type => building, building => building.powers)
-  building: building[];
+  @ManyToOne(type => Building, Building => Building.powers)
+  building: Building[];
 
   @CreateDateColumn() createdAt: string;
   @UpdateDateColumn() updatedAt: string;
-
 }
-
-export default Power;

@@ -7,11 +7,11 @@ import {
   OneToMany,
   UpdateDateColumn
 } from "typeorm";
-import power from "./Power";
+import { Power } from "./Power";
 
 
 @Entity()
-class Building extends BaseEntity{
+export class Building extends BaseEntity{
   /* primary Key */
   @PrimaryGeneratedColumn() id: number;
 
@@ -28,13 +28,10 @@ class Building extends BaseEntity{
   lng: number;
 
   /* Power Info (전력 데이터 정보) */
-  @OneToMany(type => power, power => power.building)
-  powers: power[];
+  @OneToMany(type => Power, Power => Power.building)
+  powers: Power[];
 
   @CreateDateColumn() createdAt: string;
   @UpdateDateColumn() updatedAt: string;
 
-
 }
-
-  export default Building;
