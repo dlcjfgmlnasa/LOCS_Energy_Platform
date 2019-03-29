@@ -4,6 +4,6 @@ from flask import Blueprint
 blueprint = Blueprint('public', __name__)
 
 
-@blueprint.route('/')
+@blueprint.route('/test2')
 def test():
     return 'blueprint test'
