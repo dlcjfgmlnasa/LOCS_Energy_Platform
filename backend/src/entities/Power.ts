@@ -13,7 +13,7 @@ import { Building } from "./Building";
 @Entity()
 export class Power extends BaseEntity{
   /* primary Key */
-  @PrimaryGeneratedColumn() id: number;
+  @PrimaryGeneratedColumn("increment") id: number;
 
   /* year (년도) */
   @Column({ "type": "int" })
@@ -35,6 +35,10 @@ export class Power extends BaseEntity{
   @Column({ "type": "int" })
   minute: number;
 
+  /* value (전력 데이터) */
+  @Column({ "type": "float" })
+  value: number;
+
   /* Building Info (빌딩 데이터 정보) */
   @ManyToOne(type => Building, Building => Building.powers)
   building: Building[];
@@ -42,3 +46,5 @@ export class Power extends BaseEntity{
   @CreateDateColumn() createdAt: string;
   @UpdateDateColumn() updatedAt: string;
 }
+
+export default Power;

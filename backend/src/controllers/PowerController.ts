@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-
+// import { getRepository } from "typeorm";
+// import { Power } from "../entities/Power";
 
 /* Power Model (Power.ts) Controller */
 class PowerController {

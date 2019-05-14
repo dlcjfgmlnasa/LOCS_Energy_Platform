@@ -2,7 +2,7 @@
    "type": "mysql",
    "host": "164.125.141.205",
    "port": 3306,
-   "username": "root",
+   "username": "locs",
    "password": "locslab",
    "database": "locs_eprophet",
    "synchronize": true,

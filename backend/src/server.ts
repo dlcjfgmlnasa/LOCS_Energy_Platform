@@ -10,6 +10,7 @@ import routes from "./routes";
 
 dotenv.config();
 
+// DataBase Settings
 const ConnectionOptions: ConnectionOptions = {
   type: "mysql",
   database: process.env.DB_NAME || "",
