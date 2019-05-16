@@ -20,7 +20,7 @@ export class Broken extends BaseEntity{
   value: number;
 
   /* Building Info (빌딩 데이터 정보) */
-  @ManyToOne(type => Building, Building => Building.powers)
+  @ManyToOne(type => Building, Building => Building.broken)
   building: Building[];
 
   @CreateDateColumn() createdAt: string;
