@@ -12,7 +12,7 @@ import { Building } from "./Building";
 
 const BROKEN: string = "BROKEN";
 const POWER: string = "POWER";
-type verificationTarget = "PHONE" | "EMAIL";
+export type verificationTarget = "BROKEN" | "POWER";
 
 @Entity()
 export class Model extends BaseEntity{
@@ -24,7 +24,7 @@ export class Model extends BaseEntity{
   target: verificationTarget;
 
   /* 모델 저장 위치 */
-  @Column({ "type": "string" })
+  @Column({ type: "varchar", length: 200 })
   filepath: string;
 
   /* Building Info (빌딩 데이터 정보) */
