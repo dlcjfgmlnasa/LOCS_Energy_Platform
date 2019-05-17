@@ -23,7 +23,11 @@ export class Model extends BaseEntity{
   @Column({ type: "text", enum: [BROKEN, POWER] })
   target: verificationTarget;
 
-  /* 모델 저장 위치 */
+  /* 모델 이름 (filepath) */
+  @Column({ type: "varchar", length: 100 })
+  filename: string;
+
+  /* 모델 저장 위치 (filepath) */
   @Column({ type: "varchar", length: 200 })
   filepath: string;
 
