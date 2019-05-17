@@ -9,19 +9,16 @@ import {
 } from "typeorm"
 import { Building } from "./Building";
 
-
-const BROKEN: string = "BROKEN";
-const POWER: string = "POWER";
-export type verificationTarget = "BROKEN" | "POWER";
+type MODEL_TYPE = "BROKEN" | "POWER";
 
 @Entity()
 export class Model extends BaseEntity{
   /* primary Key */
   @PrimaryGeneratedColumn("increment") id: number;
 
-  /* 모델 종류 (Broken, Power) */
-  @Column({ type: "text", enum: [BROKEN, POWER] })
-  target: verificationTarget;
+  /* 모델 종류 [Broken, Power] */
+  @Column({ type: "enum", enum: ["BROKEN", "POWER"] })
+  target: MODEL_TYPE;
 
   /* 모델 이름 (filepath) */
   @Column({ type: "varchar", length: 100 })
