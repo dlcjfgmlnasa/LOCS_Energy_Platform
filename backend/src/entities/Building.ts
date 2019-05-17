@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import { Power } from "./Power";
 import { Broken } from  "./Broken";
+import { Model } from "./Model";
 
 
 @Entity()
@@ -39,6 +40,10 @@ export class Building extends BaseEntity{
   /* Broken Info (고장 데이터 정보) */
   @OneToMany(type => Broken, Broken => Broken.building)
   broken: Broken[];
+
+  /* Model Info (모델 데이터 정보) */
+  @OneToMany(type => Model, Model => Model.building)
+  models: Model[];
 
   @CreateDateColumn() createdAt: string;
   @UpdateDateColumn() updatedAt: string;

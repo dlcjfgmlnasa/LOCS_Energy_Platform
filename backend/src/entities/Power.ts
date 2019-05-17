@@ -41,7 +41,7 @@ export class Power extends BaseEntity{
 
   /* Building Info (빌딩 데이터 정보) */
   @ManyToOne(type => Building, Building => Building.powers)
-  building: Building[];
+  building: Building;
 
   @CreateDateColumn() createdAt: string;
   @UpdateDateColumn() updatedAt: string;

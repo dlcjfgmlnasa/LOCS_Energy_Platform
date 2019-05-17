@@ -21,7 +21,7 @@ export class Broken extends BaseEntity{
 
   /* Building Info (빌딩 데이터 정보) */
   @ManyToOne(type => Building, Building => Building.broken)
-  building: Building[];
+  building: Building;
 
   @CreateDateColumn() createdAt: string;
   @UpdateDateColumn() updatedAt: string;
