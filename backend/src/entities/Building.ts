@@ -42,7 +42,7 @@ export class Building extends BaseEntity{
   broken: Broken[];
 
   /* Model Info (모델 데이터 정보) */
-  @OneToMany(type => Model, Model => Model.building)
+  @OneToMany(type => Model, Model => Model.building,  { nullable: true })
   models: Model[];
 
   @CreateDateColumn() createdAt: string;
