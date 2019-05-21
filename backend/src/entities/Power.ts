@@ -39,6 +39,10 @@ export class Power extends BaseEntity{
   @Column({ "type": "float" })
   value: number;
 
+  /* value (예측 전력 데이터) */
+  @Column({ "type": "float", nullable: true})
+  pre_value: number;
+
   /* Building Info (빌딩 데이터 정보) */
   @ManyToOne(type => Building, Building => Building.powers)
   building: Building;
