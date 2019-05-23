@@ -17,6 +17,10 @@ export class Model extends BaseEntity{
   /* primary Key */
   @PrimaryGeneratedColumn("increment") id: number;
 
+  /* api_key (api_key) */
+  @Column({ type: "varchar", length: 100 })
+  api_key: string;
+
   /* 모델 이름 (filename) */
   @Column({ type: "varchar", length: 100 })
   filename: string;
