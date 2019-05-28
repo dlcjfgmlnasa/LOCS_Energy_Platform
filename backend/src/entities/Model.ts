@@ -10,7 +10,8 @@ import {
 import { Building } from "./Building";
 
 type MODEL_TYPE = "BROKEN" | "POWER";
-type LEANING_STATUS = "STOP" | "LEARNING" | "COMPLETE" | "FAILURE"
+type LEANING_STATUS = "STOP" | "LEARNING" | "COMPLETE" | "FAILURE";
+type API_STATUS = "START" | "END";
 
 @Entity()
 export class Model extends BaseEntity{
@@ -20,6 +21,10 @@ export class Model extends BaseEntity{
   /* api_key (api_key) */
   @Column({ type: "varchar", length: 100 })
   api_key: string;
+
+  /* learning status */
+  @Column({ type: "enum", enum: ["START", "END"], default: "START"})
+  api_status: API_STATUS;
 
   /* 모델 이름 (filename) */
   @Column({ type: "varchar", length: 100 })
