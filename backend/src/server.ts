@@ -6,7 +6,10 @@ import helmet from "helmet";
 import cors from "cors";
 import bodyParser from "body-parser";
 import logger from "morgan";
+import multer from 'multer';
 import routes from "./routes";
+
+let upload = multer();
 
 dotenv.config();
 
@@ -28,6 +31,8 @@ const app = express();
 // Call Middleware
 app.use(cors());                    /* cors - Enable cross-origin Requests */
 app.use(helmet());                  /* helmet - Help us to secure our application by setting various HTTP headers */
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(upload.array());
 app.use(bodyParser.json());         /* body-parser - Parses the client’s request from json into javascript objects */
 app.use(logger('dev'))
 
