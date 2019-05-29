@@ -11,7 +11,7 @@ import { Building } from "./Building";
 
 type MODEL_TYPE = "BROKEN" | "POWER";
 type LEANING_STATUS = "STOP" | "LEARNING" | "COMPLETE" | "FAILURE";
-type API_STATUS = "START" | "END";
+type API_STATUS = "PROCESSING" | "COMPLETE";
 
 @Entity()
 export class Model extends BaseEntity{
@@ -23,7 +23,7 @@ export class Model extends BaseEntity{
   api_key: string;
 
   /* learning status */
-  @Column({ type: "enum", enum: ["START", "END"], default: "START"})
+  @Column({ type: "enum", enum: ["PROCESSING", "COMPLETE"], default: "PROCESSING"})
   api_status: API_STATUS;
 
   /* 모델 이름 (filename) */
