@@ -11,6 +11,7 @@ import { Power } from "./Power";
 import { Broken } from  "./Broken";
 import { Model } from "./Model";
 
+type PROJECT_STATUS = "PROCESSING" | "COMPLETE";
 
 @Entity()
 export class Building extends BaseEntity{
@@ -24,6 +25,10 @@ export class Building extends BaseEntity{
    /* building name (설명) */
    @Column({ type: "varchar" , nullable: true })
    overview: string;
+
+  /* learning status */
+  @Column({ type: "enum", enum: ["PROCESSING", "COMPLETE"], default: "PROCESSING"})
+  project_status: PROJECT_STATUS;
 
   /* Power Info (전력 데이터 정보) */
   @OneToMany(type => Power, Power => Power.building)
