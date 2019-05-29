@@ -4,8 +4,6 @@ import { Power } from "../entities/Power";
 
 /* Power Model (Power.ts) Controller */
 class PowerController {
-  
-
   public getEngMinute = async (req: Request, res: Response) => {
     try{      
       const list = await getRepository(Power)
