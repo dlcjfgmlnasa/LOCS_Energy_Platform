@@ -22,6 +22,23 @@ class ModelController {
     }
   }
 
+  // api 리스트
+  public getNewApiList = async (req: Request, res: Response) => {
+    try{
+      const list = await getRepository(Model)
+      .createQueryBuilder("model")
+      .orderBy("model.updatedAt", "DESC")
+      .limit(5)
+      .getMany();
+
+      res.json(list);
+    }
+    catch(e){
+      res.status(404).json({ message: e.message });
+      throw new Error(e);
+    }
+  }
+
   // 학습 퍼센트, 로그 출력
   public getApiLearningPercent = async (req: Request, res: Response) => {
     try{
@@ -30,7 +47,7 @@ class ModelController {
       .select("model.learning_percent")
       .addSelect("model.learning_log")
       .addSelect("model.target")
-      .where("model.buildingId = :id", { id: req.param('id') })
+      .where("model.buildingId = :id AND model.target = :target", { id: req.param('id'), target: req.param('target') })
       .getMany();
 
       res.json(list);

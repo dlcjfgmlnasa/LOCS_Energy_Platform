@@ -6,6 +6,7 @@ const ModelCtl = new ModelController();
 
 // api 리스트
 router.get('/list', ModelCtl.getApiList);
+router.get('/new/list', ModelCtl.getNewApiList);
 // api 학습 상태
 router.get('/percent', ModelCtl.getApiLearningPercent);
 
