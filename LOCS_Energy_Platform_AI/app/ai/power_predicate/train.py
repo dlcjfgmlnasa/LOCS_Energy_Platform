@@ -1,71 +1,101 @@
 # -*- coding:utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
-import matplotlib.pyplot as plt
-import numpy as np
+import os
+import argparse
 import tensorflow as tf
-from tensorflow.python.keras import Input
-from app.ai.power_predicate.model import get_model_with_conv1d
-from app.ai.power_predicate.dataset import get_power_with_building_id, split_sequences
+from tensorflow.python import keras
+from app.ai.power_predicate.model import conv1d
+from app.ai.power_predicate.dataset import get_power_with_building_id, split_sequences, n_features
 
 
-def example_plot(true, pred, ax):
-    ax.plot(true)
-    ax.plot(pred)
+def get_args():
+    parser = argparse.ArgumentParser(description='Train power prediction model')
+    parser.add_argument('--building_id', default='1',
+                        help='locs_eprophet power building id')
+    parser.add_argument('--filters', default=64,
+                        help='cnn filter size (default:64)')
+    parser.add_argument('--kernel_size', default=20,
+                        help='cnn kernel size (default:20)')
+    parser.add_argument('--epochs', default=10,
+                        help='Train epoch size (default:20)')
+    parser.add_argument('--batch_size', default=50,
+                        help='Train batch size (default:20)')
+    parser.add_argument('--validation_split', default=0.2,
+                        help='train data validation rate (default: 0.2)')
+    return parser.parse_args()
 
 
-def root_mean_square_deviation(y_true, y_pred):
-    return tf.sqrt(tf.reduce_mean(tf.square(tf.subtract(y_true, y_pred))))
+def root_mean_square_error(y_true, y_pred):
+    return tf.sqrt(tf.losses.mean_squared_error(y_true, y_pred))
 
 
-def train_with_convolution_neural_network(
-        building_id: int,
-        filters: int,
-        kernel_size: int,
-        split_rate: float,
-        epoch=1000,
-        batch_size=20
-    ):
-    n_steps_in, n_steps_out = 96, 96
-    # Get power Dataset
-    sequences = get_power_with_building_id(building_id)
+class LossAndErrorPrintingCallback(keras.callbacks.Callback):
+    def on_epoch_end(self, epoch, logs=None):
+        print('\n')
+        print('epoch {} loss: {:7.2f} root_mean_square_error: {:7.2f}'
+              .format(epoch, epoch, logs['loss'], logs['root_mean_square_error']))
 
-    # Split Dataset
-    split_index = int(len(sequences) * (1 - split_rate))
-    train_data, test_data = sequences[:split_index], sequences[split_index:]
 
-    # Split sequences
-    train_x, train_y = split_sequences(train_data, n_steps_in, n_steps_out)
-    test_x, test_y = split_sequences(test_data, n_steps_in, n_steps_out)
+def train_model(
+        sequences,
+        checkpoint_path,
+        cp_checkpoint,
+        filters=64,
+        kernel_size=20,
+        epochs=10,
+        batch_size=50,
+        validation_split=0.2):
 
-    # Train
-    inputs = Input(shape=(train_x.shape[1], train_x.shape[2]), name='inputs')
-    model = get_model_with_conv1d(inputs, filters=filters, kernel_size=kernel_size)
+    n_steps = 96
+    inputs = keras.Input(shape=(n_steps, n_features), name='input_layer')
+    model = conv1d(
+        inputs=inputs,
+        filters=filters,
+        kernel_size=kernel_size
+    )
+
+    if os.path.exists(checkpoint_path):
+        model.load_weights(checkpoint_path)
+
     model.summary()
-    model.compile(optimizer='adam', loss='mse', metrics=[root_mean_square_deviation])
-    model.fit(train_x, train_y,
-              validation_data=(test_x, test_y),
-              epochs=epoch,
-              batch_size=batch_size,
-              verbose=0)
+    model.compile(
+        optimizer=keras.optimizers.Adam(),
+        loss='mean_squared_error',
+        metrics=[root_mean_square_error]
+    )
 
-    # Test
-    test_loss, test_acc = model.evaluate(test_x, test_y)
-    print('Test Loss : {0} / Test RMSE : {1}'.format(test_loss, test_acc))
+    model.fit(
+        x=sequences[0],
+        y=sequences[1],
+        epochs=epochs,
+        batch_size=batch_size,
+        validation_split=validation_split,
+        use_multiprocessing=True,
+        workers=4,
+        callbacks=[
+            # `val_loss`가 2번의 에포크에 걸쳐 향상되지 않으면 훈련을 멈춥니다.
+            # keras.callbacks.EarlyStopping(patience=2, monitor='loss'),
+            # `./logs` 디렉토리에 텐서보드 로그를 기록니다.
+            # keras.callbacks.TensorBoard(log_dir='./logs')
+            cp_checkpoint
+        ],
+    )
 
-    # Show Image
-    fig, axes = plt.subplots(nrows=5, ncols=5)
-    rands = np.random.randint(0, len(test_x), 25)
-    i = 0
-    for row in axes:
-        for each_ax in row:
-            random_number = rands[i]
-            pred = model.predict(test_x[random_number][np.newaxis, :])[0]
-            true = test_y[i]
-            example_plot(true, pred, each_ax)
-            i = i+1
-    plt.tight_layout()
-    plt.show()
+    model.save_weights(checkpoint_path)
 
 
-train_with_convolution_neural_network(1, 64, 2, 0.1)
+def train():
+    args = get_args()
+    sequences = get_power_with_building_id(args.building_id)
+    n_steps = 96
+    weekday_sequences, weekend_sequences = split_sequences(sequences, n_steps)
+    weekday_checkpoint_path = './weights/weekday/building-{building_id}'.format(building_id=args.building_id)
+    weekend_checkpoint_path = './weights/weekend/building-{building_id}'.format(building_id=args.building_id)
+
+    train_model(weekday_sequences, weekday_checkpoint_path, LossAndErrorPrintingCallback())
+    train_model(weekend_sequences, weekend_checkpoint_path, LossAndErrorPrintingCallback())
+
+
+if __name__ == '__main__':
+    train()
 

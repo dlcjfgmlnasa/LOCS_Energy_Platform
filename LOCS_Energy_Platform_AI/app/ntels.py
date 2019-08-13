@@ -1,10 +1,12 @@
 # -*- coding:utf-8 -*-
+import json
 import asyncio
 import requests
 import datetime
 import pandas as pd
 import app.server as server
 import app.tables as models
+
 
 db = server.db
 base_url = 'https://nisbcp.ntels.com:18080'
@@ -42,6 +44,7 @@ def get_datetime_date(time_frame):
 def get_data(login_session, building, start_date, end_date):
     url = '{0}/NISBCP/urbanmap/energy/getBuildingEnergyTrend.ajax?startDate={1}&endDate={2}&bid={3}&period={4}'. \
         format(base_url, start_date, end_date, building.as_dict()['bld'], '15m')
+    print(url)
     try:
         columns = ['logdate', 'usage']
         response = login_session.get(url, verify=False, timeout=90)
@@ -55,6 +58,8 @@ def get_data(login_session, building, start_date, end_date):
         return n_frame
     except ConnectionError:
         raise ConnectionError('Could not get data from https request, check server API configuration')
+    except json.decoder.JSONDecodeError:
+        raise Exception('json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)')
 
 
 def export_power_data(building, frame):
@@ -65,7 +70,7 @@ def export_power_data(building, frame):
             month=month,
             day=day,
             hour=hour,
-            minute=month,
+            minute=minute,
             value=power))
     building.powers = powers
     return building
@@ -97,13 +102,12 @@ def bulk(start_date, end_date):
 
     for building in db.session.query(models.Building).all():
         print('building %s data export to db' % building.as_dict()['name'])
-
         frame = get_data(login_session, building, start_date, end_date)
-        building = export_power_data(building, frame)
-        db.session.add(building)
-        db.session.commit()
+        print(frame)
+        # building = export_power_data(building, frame)
+        # db.session.add(building)
+        # db.session.commit()
 
 
-bulk('20181130234500', '20190417234500')
-
-
+if __name__ == '__main__':
+    bulk('20180610234500', '20181231234500')
